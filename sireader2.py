@@ -639,6 +639,25 @@ class SIReader(object):
         finally:
             self._update_proto_config()
 
+    def set_battery_date(self, byear, bmonth, bday):
+        """Set station battery date to SYS_VAL.
+        @bdate : build-date as a string YYYY-MM-DD
+        """
+        if byear > 2000:
+            byear = byear - 2000
+        if byear < 1 or byear > 255:
+            raise SIReaderException("Invalid battery year: '%i'! " % byear)
+        if bmonth < 1 or bmonth > 12:
+            raise SIReaderException("Invalid battery month: '%i'! " % bmonth)
+        if bday < 1 or bday > 31:
+            raise SIReaderException("Invalid battery day: '%i'! " % bday)
+
+        try:
+            self._send_command(SIReader.C_SET_SYS_VAL, SIReader.O_BAT_DATE + int2byte(bday) +
+                    int2byte(bmonth) + int2byte((byear)))
+        finally:
+            self._update_proto_config()
+
     def set_baud_rate_4800(self):
         """Set the baudrate to 4800 of the direct or remote station depending on 
         which one is currently being communicated with.
